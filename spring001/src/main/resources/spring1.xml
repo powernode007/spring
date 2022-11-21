@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+  http://www.springframework.org/schema/context
+  https://www.springframework.org/schema/context/spring-context.xsd">
+    <!--我们使用注解的方式  在类上加上注解，表示该类想要被spring容器管理
+        spring容器通过扫描这些注解  识别哪些类需要被容器管理
+    -->
+    <!--扫描指定包是否有实体类注解  -->
+    <!--建议扫描范围不要太大  速度慢 效率低-->
+   <!-- <context:component-scan base-package="com.bjpn.bean"/>
+    <context:component-scan base-package="com.bjpn.dao"/>
+    <context:component-scan base-package="com.bjpn.service"/>-->
+    <!--把包用逗号或者分号隔开-->
+    <!--<context:component-scan base-package="com.bjpn.bean,com.bjpn.dao,com.bjpn.service"/>-->
+    <!--注解方式的前提：只能使用无参构造-->
+    <context:component-scan base-package="com.bjpn.bean;com.bjpn.dao;com.bjpn.service"/>
+</beans>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+  http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!--spring容器-->
+    <!--把目标类和增强类都交给容器管理-->
+    <bean id="h" class="com.bjpn.aop.Hero"/><!--目标类-->
+    <bean id="c" class="com.bjpn.aop.ChainActive"/><!--增强类-->
+    <!--在配置文件中 设置切面  切点  设置交叉业务的通知方式-->
+    <aop:config>
+        <!--aop的配置信息-->
+        <aop:aspect id="aaa" ref="c"><!--把增强类当做切面  准备把他切入到目标类中-->
+            <!--设置切点   切点需要切在连接点上
+                expression：切点的位置   连接点的位置
+            -->
+            <aop:pointcut id="qBefore" expression="execution(* com.bjpn.aop.Hero.Q(..))"/>
+            <!--设置通知类型-->
+            <aop:before method="sayHi" pointcut-ref="qBefore"/>
+        </aop:aspect>
+        <!--R之后调用sayBye-->
+        <aop:aspect id="bbb" ref="c">
+            <aop:after method="sayBye" pointcut="execution(* com.bjpn.aop..R(..))"/>
+        </aop:aspect>
+
+        <aop:aspect id="c" ref="c">
+            <aop:after method="sayChong" pointcut="execution(* com.bjpn.aop..W(..))"/>
+        </aop:aspect>
+
+        <aop:aspect id="d" ref="c">
+            <aop:after method="sayZhuan" pointcut="execution(* com.bjpn.aop..E(..))"/>
+        </aop:aspect>
+
+
+
+    </aop:config>
+</beans>

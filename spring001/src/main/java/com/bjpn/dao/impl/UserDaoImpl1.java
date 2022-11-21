@@ -1,0 +1,11 @@
+package com.bjpn.dao.impl;
+
+import com.bjpn.dao.UserDao;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class UserDaoImpl1 implements UserDao {
+    public void showUser(){
+        System.out.println("这是userDaoImpl1中showUser方法----这是实现类2");
+    }
+}

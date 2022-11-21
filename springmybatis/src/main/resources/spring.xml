@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+  http://www.springframework.org/schema/context
+  https://www.springframework.org/schema/context/spring-context.xsd
+  http://www.springframework.org/schema/aop
+  https://www.springframework.org/schema/aop/spring-aop.xsd
+  http://www.springframework.org/schema/tx
+  http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <!--spring的对象容器
+        使用spring容器  管理mybatis的对象
+    -->
+    <!--1、读取配置文件  获取jdbc连接信息-->
+    <context:property-placeholder location="classpath:dbutil.properties"/>
+    <!--2、把连接对象交给spring容器管理   jdbc对象  需要使用spring的jdbc模块-->
+    <!--这里的连接 使用的普通连接  用一次开一次  用完就关闭-->
+    <bean id="myDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${driverName}"/>
+        <property name="url" value="${urlName}"/>
+        <property name="username" value="root"/>
+        <property name="password" value="873639952"/>
+    </bean>
+    <!--3、管理SqlSessionFactory对象-->
+    <bean id="mySqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--工厂类需要数据源对象-->
+        <property name="dataSource" ref="myDataSource"/>
+        <!--可以读取mybatis的核心配置文件  需要就读取  不需要就不读取-->
+        <property name="configLocation" value="classpath:mybatis.xml"/>
+        <!--读取resources下的mapper.xml  如果mapper.xml在java下  这个就可以不写-->
+        <!--<property name="mapperLocations" value="classpath:mapper/*.xml"/>-->
+    </bean>
+    <!--4、获取sqlSession的目的是为了动态代理生成mapper接口的实现类
+    mapper接口实现类就是持久层对象
+    spring提供一个mapper扫描器  直接把mapper接口和mapper.xml进行扫描
+    根据sqlSessionFactory生成的sqlSession  直接动态带来生成实现类  被spring容器管理
+    -->
+    <bean id="myMapperScan" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--要扫描的包路径  mapper接口和mapper.xml
+            要求：mapper接口的名字和mapper.xml文件的名字一致
+        -->
+        <property name="basePackage" value="com.bjpn.mapper"/>
+        <!--sqlSessionFactory属性-->
+        <property name="sqlSessionFactoryBeanName" value="mySqlSessionFactory"/>
+    </bean>
+    <!--spring容器通过实体类注解扫描实体类 加载到容器中管理-->
+    <context:component-scan base-package="com.bjpn.service"/>
+    <!--5、设置Spring的jdbc事务-->
+    <bean id="myTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="myDataSource"/>
+    </bean>
+    <!--使用注解版的aop方式在service切入spring的事务
+        事务管理器要被spring容器管理myTransactionManager：增强类
+        service也要被spring容器管理 :目标类
+    -->
+    <!--开启tx的事务管理驱动  引入了事务对象-->
+    <tx:annotation-driven transaction-manager="myTransactionManager"/>
+
+
+    <!--&lt;!&ndash;6、使用aop把事务对象（增强类）切入到增删改查对象（目标类）&ndash;&gt;
+    <aop:config>
+        &lt;!&ndash;通知器   通知器和切面的含义一样&ndash;&gt;
+       &lt;!&ndash; < aop:aspect>：定义切面（切面包括通知和切点）
+        < aop:advisor>：定义通知器（通知器跟切面一样，也包括通知和切点）
+        < aop:advisor>和< aop:aspect>其实都是将通知和切面进行了封装，原理基本上是一样的，只是使用的方式不同而已。
+        < aop:aspect>大多用于日志，缓存
+        < aop:advisor>大多用于事务管理。&ndash;&gt;
+        <aop:pointcut id="allServiceMethod" expression="execution(* com.bjpn.service..*(..))"/>
+        &lt;!&ndash;通知器就是通知增强类在什么时候 什么地点切入&ndash;&gt;
+        <aop:advisor advice-ref="myAdvice"  pointcut-ref="allServiceMethod"/>
+    </aop:config>
+    &lt;!&ndash;spring的事务传播行为
+        tx:advice有两层作用
+        1，给切点（所有的service方法）提供事务  jdbc的事务
+        2，设置了service方法上事务的传播行为
+    &ndash;&gt;
+    <tx:advice id="myAdvice" transaction-manager="myTransactionManager">
+        <tx:attributes>
+            <tx:method name="finAllUserService" propagation="SUPPORTS" read-only="true"/>
+            &lt;!&ndash;方法名是save开头的方法  它的事务是REQUIRED  出错时回滚&ndash;&gt;
+            <tx:method name="save*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="add*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="save*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="edit*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="update*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="delete*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="remove*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="modify*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="userDelService" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="get*" propagation="SUPPORTS" read-only="true"/>
+            <tx:method name="find*" propagation="SUPPORTS" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+-->
+</beans>

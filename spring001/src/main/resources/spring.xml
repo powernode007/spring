@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-4.1.xsd">
+    <!--spring的管理对象的配置文件   哪个对象想要让spring容器管理  就把对象的信息写在这里-->
+    <!--spring对象容器是一个map集合方式的容器
+        key：对象的唯一标识
+        value：是对象   spring容器把管理的对象统统转换成Object类型
+    -->
+    <!--bean:要被管理的对象信息
+            id:该对象在容器中的唯一标识  不能重复
+            class:该对象在工程中的全限定名  用反射方式构建对象
+    -->
+    <!--<bean id="u" class="com.bjpn.bean.User"/>-->
+    <!--使用有参构造-->
+    <bean id="u1" class="com.bjpn.bean.User1">
+        <constructor-arg name="uid" value="1001"/>
+        <constructor-arg name="uname" value="大郎"/>
+        <constructor-arg name="upwd" value="123"/>
+    </bean>
+    <!--使用set方法赋值
+        必须有无参构造存在
+    -->
+    <bean id="u2" class="com.bjpn.bean.User1">
+        <property name="uname" value="西门"/>
+        <property name="upwd" value="666"/>
+    </bean>
+    <!--依赖注入：依赖类需要被依赖类的支持  我们让spring容器在创建依赖类时
+        直接把被依赖类对象注入到依赖类中
+        依赖注入的前提：依赖类和被依赖类都要被spring容器管理
+    -->
+    <!--管理userDao   被依赖类-->
+    <bean id="ud" class="com.bjpn.dao.impl.UserDaoImpl"/>
+    <!--管理userService   依赖类  userService需要userDao的支持-->
+    <bean id="us" class="com.bjpn.service.UserService1">
+        <property name="userDao" ref="ud"/>
+    </bean>
+
+</beans>
